@@ -13,47 +13,80 @@ async function getImage(gifId, name) {
     return {url : result.data.images.original.url, name : name}
 }
 
-export default function Card() {
+export default function Card({score, setScore, bestScore, setBestScore}) {
     const [cardList, setCardList] = useState([]);
-    const [error, setError] = useState(null);
-
+    
     function handleClick(index) {
-        //check if the card is already clicked 
+        const selectedCard = cardList[index];
+        if (selectedCard.clicked) {
+           setScore(0);
+           //map through all ofgthe card listg and set clicke value to false
+           const resetList = cardList.map((item)=> ({
+            ...item,
+            clicked: false
+           }))
+           shuffleArray(resetList);
+           setCardList(resetList);
+        }
+        else {
+            setScore(score+1)
+            if (score >= bestScore) {
+                setBestScore(score);
+            }
+            const updateCardList = [...cardList];
+            updateCardList[index].clicked = true;
+            shuffleArray(updateCardList);
+            setCardList(updateCardList);
+        }
+
+    }
+    
+    function shuffleArray(array) {
         
-        //if it has change the score to 0 
-
-        //else increment score and update best score accordingly 
-        //set clicked to true 
-
-        //randomize the order of the buttons
-
+        for (var i = array.length -1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i+1));
+            var temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+        return array;
     }
+            
     useEffect(() => {
-        const initialCards = [{gifId :'OapNdFPJMxn0c', name : 'Chicken'}, {gifId : '14lyRxMNopIAZW', name: "nuggets"}]
-        Promise.all(initialCards.map((card) => getImage(card.gifId, card.name)))
-            .then(urls => {
-                const cards = urls.map((card, index) => ({
+        async function fetchImages() {
+            try {
+                const initialCards =[
+                    {gifId :'OapNdFPJMxn0c', name : 'Chicken'}, {gifId : '14lyRxMNopIAZW', name: "Nuggets"},
+                    {gifId : '4ayiIWaq2VULC', name: "Pizza"}, {gifId : 'JteZf56ZXsJl6', name: "Burger"},
+                    {gifId : 'kHO7BBVkFnoqG4aPNf', name: "Tender"}, {gifId : '8gXfspeZK8vHja3u3j', name: "Wing"},
+                    {gifId : '1ZAtHfh8qUayx8IJx7', name: "Flatbread"}, {gifId : 'J8G3NaPq66gp2', name: "Ramen"},
+                    {gifId : 'hVddJTC3cONXy', name: "Pho"}, {gifId : '2idBE8DmOcUFQ4g3RT', name: "Wrap"},
+
+                ]
+                const results = await Promise.all(
+                    initialCards.map(card => getImage(card.gifId, card.name))
+                );
+    
+                const cards = results.map((card, index) => ({
                     id: index,
-                    src: card.url, 
+                    src: card.url,
                     name: card.name,
-                    clicked : false
-                }));
-                setCardList(cards);
-            })
-            .catch(err => {
-                console.error("Error fetching images:", err);
-                setError(err.message);
-            });
+                    clicked: false,
+                }));    
+                let result = shuffleArray(cards);
+                result = result.splice(0,8);
+                setCardList(result);
+                //setCardList(cards);
+            } catch (err) {
+                window.error("Error fetching images:", err);
+            }
+        }
+        fetchImages();
     }, []);
-
-    if (error) {
-        return <div>Error: {error}</div>;
-    }
-
     return (
         <div className="card-container">
-            {cardList.map(card => (
-                <button key={card.id} className="card" onClick={handleClick(card.index)}>
+            {cardList.map((card,index) => (
+                <button key={card.id} className="card" onClick={ () => handleClick(index)}>
                     <img src={card.src} alt={`GIF ${card.id}`} />
                     <h2>{card.name}</h2>
                 </button>
