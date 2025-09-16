@@ -21,7 +21,7 @@ export default function Card({score, setScore, bestScore, setBestScore}) {
             if (score >= bestScore) {
                 setBestScore(score);
             }
-            window.alert(`Round over. You got ${score} points.}`)
+            window.alert(`Round over. You got ${score} points.`)
            setScore(0);
            const resetList = cardList.map((item)=> ({
             ...item,
