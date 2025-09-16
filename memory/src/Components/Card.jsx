@@ -14,13 +14,15 @@ async function getImage(gifId, name) {
 }
 
 export default function Card({score, setScore, bestScore, setBestScore}) {
-    const [cardList, setCardList] = useState([]);
-    
+    const [cardList, setCardList] = useState([])
     function handleClick(index) {
         const selectedCard = cardList[index];
         if (selectedCard.clicked) {
+            if (score >= bestScore) {
+                setBestScore(score);
+            }
+            window.alert(`Round over. You got ${score} points.}`)
            setScore(0);
-           //map through all ofgthe card listg and set clicke value to false
            const resetList = cardList.map((item)=> ({
             ...item,
             clicked: false
@@ -30,13 +32,10 @@ export default function Card({score, setScore, bestScore, setBestScore}) {
         }
         else {
             setScore(score+1)
-            if (score >= bestScore) {
-                setBestScore(score);
-            }
             const updateCardList = [...cardList];
             updateCardList[index].clicked = true;
             shuffleArray(updateCardList);
-            setCardList(updateCardList);
+            setCardList(updateCardList); 
         }
 
     }
@@ -61,6 +60,7 @@ export default function Card({score, setScore, bestScore, setBestScore}) {
                     {gifId : 'kHO7BBVkFnoqG4aPNf', name: "Tender"}, {gifId : '8gXfspeZK8vHja3u3j', name: "Wing"},
                     {gifId : '1ZAtHfh8qUayx8IJx7', name: "Flatbread"}, {gifId : 'J8G3NaPq66gp2', name: "Ramen"},
                     {gifId : 'hVddJTC3cONXy', name: "Pho"}, {gifId : '2idBE8DmOcUFQ4g3RT', name: "Wrap"},
+                    {gifId : 'oIiLWDtCjKlQVzCFgb', name: "Shawarma"}, {gifId : '3JgtnXdRhSflK', name: "Tacos"}
 
                 ]
                 const results = await Promise.all(
@@ -73,22 +73,21 @@ export default function Card({score, setScore, bestScore, setBestScore}) {
                     name: card.name,
                     clicked: false,
                 }));    
-                let result = shuffleArray(cards);
-                result = result.splice(0,8);
-                setCardList(result);
-                //setCardList(cards);
+                setCardList(cards);
             } catch (err) {
                 window.error("Error fetching images:", err);
             }
         }
         fetchImages();
     }, []);
+
+
     return (
         <div className="card-container">
             {cardList.map((card,index) => (
                 <button key={card.id} className="card" onClick={ () => handleClick(index)}>
-                    <img src={card.src} alt={`GIF ${card.id}`} />
-                    <h2>{card.name}</h2>
+                    <img src={card.src} alt={`GIF ${card.name}`} />
+                    <h2 className='cardName'>{card.name}</h2>
                 </button>
             ))}
         </div>

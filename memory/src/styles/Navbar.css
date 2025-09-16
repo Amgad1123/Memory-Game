@@ -1,5 +1,15 @@
+@font-face {
+    font-family: 'Caesar';
+    src: url(./CaesarDressing-Regular.ttf);
+}
+
+@font-face {
+    font-family: 'ComingSoon';
+    src: url(./ComingSoon-Regular.ttf);
+}
 .Navbar  {
     display: flex;
+    font-family: 'Caesar', sans-serif;
     justify-content: space-between;
     position: absolute;
     top: 0;
@@ -21,7 +31,7 @@
     margin-top: -12px;
 }
 .scoreDiv {
-    font-family: fantasy;
+    font-family: 'ComingSoon', sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
